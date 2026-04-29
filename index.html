@@ -604,19 +604,19 @@
       cat: "cafe",
       icon: "🪑",
       desc: "北欧フィンランドをイメージした森の中に佇むユニークなカフェ。ハンモックに揺られながらコーヒーを楽しめる癒しの空間。愛犬と一緒にテラスでのんびり過ごせます。",
-      addr: "那須郡那須町大島",
-      lat: 37.0960, lng: 140.0080,
+      addr: "那須郡那須町高久乙2730-7",
+      lat: 37.052688, lng: 140.014373,
       tags: ["ペット同伴可", "テラス席", "ハンモック体験"],
     },
     {
       id: 12,
-      name: "Nasu Farm Village",
+      name: "NASU FARM VILLAGE",
       cat: "nature",
       icon: "🐄",
-      desc: "那須高原の大自然の中に広がる農場テーマパーク。動物との触れ合いや収穫体験が楽しめ、愛犬も一緒に参加できるエリアも充実。家族みんなで楽しめます。",
-      addr: "那須郡那須町大島",
-      lat: 37.0730, lng: 140.0520,
-      tags: ["ペット同伴可", "動物ふれあい", "収穫体験"],
+      desc: "東京ドーム11個分の広大な敷地を誇る農場テーマパーク。引退した競走馬との触れ合いや乗馬体験が楽しめ、愛犬も一緒に広大な自然の中を散策できます。",
+      addr: "大田原市狭原1298-1",
+      lat: 36.840382, lng: 140.102363,
+      tags: ["ペット同伴可", "乗馬体験", "広大な敷地"],
     },
   ];
 
@@ -626,7 +626,7 @@
   };
 
   // ── MAP INIT ─────────────────────────────────────────
-  const map = L.map("map", { zoomControl: true }).setView([37.08, 140.00], 12);
+  const map = L.map("map", { zoomControl: true }).setView([37.00, 140.05], 11);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -773,7 +773,7 @@
           [Math.max(...lats), Math.max(...lngs)],
         ], { padding: [40, 40], maxZoom: 14, duration: 1.0 });
       } else {
-        map.flyTo([37.08, 140.00], 12, { duration: 1.0 });
+        map.flyTo([37.00, 140.05], 11, { duration: 1.0 });
       }
 
       renderCards();
