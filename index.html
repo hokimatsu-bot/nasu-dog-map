@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>わんこと行く那須高原マップ | Fun Dog Villa Nasu</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green:        #2A5F3F;
+      --green-light:  #3A7D52;
+      --green-dark:   #1A3D28;
+      --sand:         #F7F2EA;
+      --sand-dark:    #EDE7DC;
+      --amber:        #C98B35;
+      --amber-light:  #E5A84E;
+      --brown:        #7A4F28;
+      --white:        #FFFFFF;
+      --text:         #2C2C2C;
+      --text-mid:     #555;
+      --text-light:   #888;
+      --border:       #E2DBD0;
+
+      --cat-cafe-bg:    #FDF0E0;
+      --cat-cafe-text:  #7A4010;
+      --cat-cafe-border:#E5A060;
+      --cat-run-bg:     #E5F5ED;
+      --cat-run-text:   #1A6B3A;
+      --cat-run-border: #60BF88;
+      --cat-rest-bg:    #FEF0F0;
+      --cat-rest-text:  #9B2030;
+      --cat-rest-border:#E07080;
+      --cat-nat-bg:     #EAF4FB;
+      --cat-nat-text:   #1A5B8A;
+      --cat-nat-border: #70B8E0;
+
+      --shadow-sm: 0 1px 4px rgba(0,0,0,.08);
+      --shadow-md: 0 3px 12px rgba(0,0,0,.12);
+      --shadow-lg: 0 6px 24px rgba(0,0,0,.14);
+      --radius:    12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3',
+                   'Noto Sans JP', 'Yu Gothic', sans-serif;
+      background: var(--sand);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── HEADER ─────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 100%);
+      color: var(--white);
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      z-index: 100;
+    }
+
+    .hd-paw {
+      font-size: 32px;
+      line-height: 1;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+    }
+
+    .hd-titles { flex: 1; min-width: 0; }
+    .hd-titles h1 {
+      font-size: 17px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hd-titles p {
+      font-size: 11px;
+      opacity: .78;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hd-badge {
+      background: var(--amber);
+      color: var(--white);
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+
+    /* ─── FILTER BAR ──────────────────────────────────── */
+    .filter-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      flex-shrink: 0;
+      z-index: 99;
+    }
+
+    .filter-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-light);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .fbtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 13px;
+      border-radius: 20px;
+      border: 2px solid transparent;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+      background: var(--sand-dark);
+      color: var(--text-mid);
+      font-family: inherit;
+    }
+
+    .fbtn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+    .fbtn[data-cat="all"]        { background: var(--sand-dark); color: var(--text-mid); }
+    .fbtn[data-cat="cafe"]       { background: var(--cat-cafe-bg); color: var(--cat-cafe-text); border-color: var(--cat-cafe-border); }
+    .fbtn[data-cat="dogrun"]     { background: var(--cat-run-bg); color: var(--cat-run-text); border-color: var(--cat-run-border); }
+    .fbtn[data-cat="restaurant"] { background: var(--cat-rest-bg); color: var(--cat-rest-text); border-color: var(--cat-rest-border); }
+    .fbtn[data-cat="nature"]     { background: var(--cat-nat-bg); color: var(--cat-nat-text); border-color: var(--cat-nat-border); }
+
+    .fbtn:not(.active) { opacity: .55; }
+    .fbtn.active       { opacity: 1; box-shadow: var(--shadow-md); transform: none; }
+    .fbtn[data-cat="all"].active { background: var(--green); color: var(--white); border-color: transparent; }
+
+    /* ─── MAIN LAYOUT ────────────────────────────────── */
+    .main {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR / SPOTS LIST ───────────────────────── */
+    .sidebar {
+      background: var(--sand);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--amber-light); border-radius: 2px; }
+
+    .list-header {
+      padding: 10px 14px 6px;
+      font-size: 11px;
+      color: var(--text-light);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .cards-wrap {
+      padding: 0 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ─── SPOT CARD ──────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      box-shadow: var(--shadow-sm);
+      transition: border-color .2s, box-shadow .2s, transform .15s;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .card.selected {
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(42,95,63,.1), var(--shadow-md);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 7px;
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .card-icon.cafe       { background: var(--cat-cafe-bg); }
+    .card-icon.dogrun     { background: var(--cat-run-bg); }
+    .card-icon.restaurant { background: var(--cat-rest-bg); }
+    .card-icon.nature     { background: var(--cat-nat-bg); }
+
+    .card-meta { flex: 1; min-width: 0; }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .cat-badge {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 2px 9px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .cat-badge.cafe       { background: var(--cat-cafe-bg); color: var(--cat-cafe-text); }
+    .cat-badge.dogrun     { background: var(--cat-run-bg); color: var(--cat-run-text); }
+    .cat-badge.restaurant { background: var(--cat-rest-bg); color: var(--cat-rest-text); }
+    .cat-badge.nature     { background: var(--cat-nat-bg); color: var(--cat-nat-text); }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-mid);
+      line-height: 1.65;
+      margin-bottom: 6px;
+    }
+
+    .card-addr {
+      font-size: 11px;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-bottom: 7px;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .tag {
+      background: var(--sand-dark);
+      color: var(--text-mid);
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    /* ─── MAP AREA ───────────────────────────────────── */
+    .map-area {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-area iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .map-hint {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--text-mid);
+      box-shadow: var(--shadow-md);
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity .4s;
+    }
+
+    .map-hint.hidden { opacity: 0; }
+
+    /* ─── MOBILE ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      body { overflow: auto; height: auto; }
+
+      .main {
+        grid-template-columns: 1fr;
+        grid-template-rows: 280px auto;
+        overflow: visible;
+      }
+
+      .map-area { height: 280px; order: 1; grid-row: 1; }
+
+      .sidebar {
+        order: 2;
+        grid-row: 2;
+        overflow-y: visible;
+        height: auto;
+      }
+
+      header { height: 56px; padding: 0 14px; }
+      .hd-titles h1 { font-size: 15px; }
+      .hd-badge { display: none; }
+
+      .filter-bar { padding: 8px 12px; }
+      .fbtn { font-size: 11px; padding: 4px 10px; }
+
+      .card { padding: 11px 12px; }
+      .card-name { font-size: 13px; }
+    }
+
+    @media (max-width: 420px) {
+      .hd-titles p { display: none; }
+    }
+
+    /* ─── EMPTY STATE ─────────────────────────────────── */
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-light);
+    }
+    .empty .empty-icon { font-size: 40px; margin-bottom: 10px; }
+    .empty p { font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────── -->
+<header>
+  <div class="hd-paw">🐾</div>
+  <div class="hd-titles">
+    <h1>那須高原 わんこマップ</h1>
+    <p>Fun Dog Villa Nasu — わんこと楽しむ那須の旅</p>
+  </div>
+  <div class="hd-badge" id="hdBadge">10スポット</div>
+</header>
+
+<!-- ── FILTER BAR ──────────────────────────────────── -->
+<div class="filter-bar">
+  <div class="filter-label">カテゴリー</div>
+  <div class="filter-buttons">
+    <button class="fbtn active" data-cat="all">🐾 すべて</button>
+    <button class="fbtn" data-cat="cafe">☕ ドッグカフェ</button>
+    <button class="fbtn" data-cat="dogrun">🏃 ドッグラン</button>
+    <button class="fbtn" data-cat="restaurant">🍽️ レストラン</button>
+    <button class="fbtn" data-cat="nature">🌿 散歩コース</button>
+  </div>
+</div>
+
+<!-- ── MAIN ────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="list-header" id="listHeader">10件のスポット</div>
+    <div class="cards-wrap" id="cardsWrap"></div>
+  </aside>
+
+  <!-- Map -->
+  <div class="map-area">
+    <iframe
+      id="mapFrame"
+      src="https://maps.google.com/maps?q=那須高原,栃木県&z=12&output=embed"
+      allowfullscreen
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+    <div class="map-hint" id="mapHint">📍 スポットをタップすると地図が移動します</div>
+  </div>
+
+</div>
+
+<script>
+  // ── DATA ────────────────────────────────────────────
+  const spots = [
+    {
+      id: 1,
+      name: "那須どうぶつ王国",
+      cat: "nature",
+      icon: "🦁",
+      desc: "動物たちと触れ合える人気テーマパーク。ペット同伴可エリアで愛犬と一緒に動物たちを観察。広大な自然の中で一日楽しめます。",
+      addr: "那須郡那須町大島1042-1",
+      lat: 37.0892, lng: 140.0233,
+      tags: ["ペット同伴可", "自然体験", "家族向け"],
+    },
+    {
+      id: 2,
+      name: "那須ガーデンアウトレット",
+      cat: "restaurant",
+      icon: "🛍️",
+      desc: "ペット連れOKのショッピングモール。ドッグカートの貸し出しもあり。フードコートの一部テラス席でも愛犬と一緒に食事できます。",
+      addr: "那須塩原市石林252-1",
+      lat: 36.9723, lng: 140.0479,
+      tags: ["ペット同伴可", "カートレンタル", "屋外エリア"],
+    },
+    {
+      id: 3,
+      name: "殺生石公園 自然遊歩道",
+      cat: "nature",
+      icon: "🌋",
+      desc: "那須岳の麓に広がる神秘的な自然公園。硫黄の香りただよう独特の風景の中、愛犬と一緒に歴史ある遊歩道を散策できます。",
+      addr: "那須郡那須町湯本182",
+      lat: 37.1199, lng: 139.9737,
+      tags: ["リード必須", "温泉地近く", "歴史スポット"],
+    },
+    {
+      id: 4,
+      name: "茶臼岳・那須連山トレイル",
+      cat: "nature",
+      icon: "🏔️",
+      desc: "那須連山の雄大な景色の中を歩く絶景ハイキングコース。体力に合わせてコースを選べ、秋の紅葉シーズンは特におすすめです。",
+      addr: "那須郡那須町湯本（那須岳ロープウェイ近く）",
+      lat: 37.1259, lng: 139.9681,
+      tags: ["リード必須", "紅葉名所", "健脚コースあり"],
+    },
+    {
+      id: 5,
+      name: "ドッグパーク那須",
+      cat: "dogrun",
+      icon: "🏃",
+      desc: "広大な芝生が広がる那須最大級のドッグラン。小型犬・大型犬エリアを完全分離。夏季はプールも開放され、一日中遊べます。",
+      addr: "那須郡那須町大島",
+      lat: 37.1050, lng: 140.0120,
+      tags: ["小大型分離", "プールあり", "シャワー完備"],
+    },
+    {
+      id: 6,
+      name: "DOG CAFÉ LEAVES",
+      cat: "cafe",
+      icon: "☕",
+      desc: "森の中に佇むドッグカフェ。テラス席でわんこと一緒にランチやスイーツを楽しめます。地元那須の食材にこだわったメニューが絶品。",
+      addr: "那須郡那須町高久甲",
+      lat: 37.1050, lng: 139.9950,
+      tags: ["テラス席", "ランチあり", "地産食材"],
+    },
+    {
+      id: 7,
+      name: "PAWS BAKERY & CAFÉ",
+      cat: "cafe",
+      icon: "🥐",
+      desc: "毎朝焼きたてのパンが並ぶドッグフレンドリーカフェ。わんこ用のケーキやおやつメニューも充実。那須高原の風を感じる開放的なテラスで至福のひと時を。",
+      addr: "那須郡那須町高久丙",
+      lat: 37.0980, lng: 140.0050,
+      tags: ["ワンコメニューあり", "焼きたてパン", "テラス席"],
+    },
+    {
+      id: 8,
+      name: "NASU RANCH GRILL",
+      cat: "restaurant",
+      icon: "🥩",
+      desc: "那須牛・那須高原ポークを使った本格グリルレストラン。広い芝生テラスでのBBQが人気。愛犬と一緒に那須産の美味しさを満喫できます。",
+      addr: "那須郡那須町高久甲",
+      lat: 37.0890, lng: 139.9870,
+      tags: ["BBQ可", "芝生テラス", "那須牛・那須ポーク"],
+    },
+    {
+      id: 9,
+      name: "ドッグラン FREEDOM",
+      cat: "dogrun",
+      icon: "🐕",
+      desc: "那須連山を一望できる高台にあるドッグラン。爽快な眺望の中を愛犬が思いっきり駆け回れます。アジリティ設備・休憩スペースも充実。",
+      addr: "那須郡那須町豊原",
+      lat: 37.0820, lng: 139.9780,
+      tags: ["アジリティあり", "眺望抜群", "年中無休"],
+    },
+    {
+      id: 10,
+      name: "那須高原 森の遊歩道",
+      cat: "nature",
+      icon: "🌲",
+      desc: "那須高原の深い緑の中をのんびり散策できる癒しの遊歩道。野鳥のさえずりを聞きながら、愛犬と一緒に澄んだ空気を全身で感じて。",
+      addr: "那須郡那須町高久乙",
+      lat: 37.1150, lng: 140.0050,
+      tags: ["リード必須", "野鳥観察", "無料駐車場"],
+    },
+  ];
+
+  const catLabel = {
+    cafe:       "ドッグカフェ",
+    dogrun:     "ドッグラン",
+    restaurant: "ペット可レストラン",
+    nature:     "自然散歩コース",
+  };
+
+  // ── STATE ────────────────────────────────────────────
+  let activeFilter  = "all";
+  let selectedId    = null;
+  let hintTimer     = null;
+
+  // ── RENDER ──────────────────────────────────────────
+  function filteredSpots() {
+    return activeFilter === "all"
+      ? spots
+      : spots.filter(s => s.cat === activeFilter);
+  }
+
+  function renderCards() {
+    const list = filteredSpots();
+    const wrap = document.getElementById("cardsWrap");
+    document.getElementById("listHeader").textContent = `${list.length}件のスポット`;
+    document.getElementById("hdBadge").textContent = `${list.length}スポット`;
+
+    wrap.innerHTML = "";
+
+    if (list.length === 0) {
+      wrap.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🐾</div>
+          <p>該当するスポットがありません</p>
+        </div>`;
+      return;
+    }
+
+    list.forEach(spot => {
+      const el = document.createElement("div");
+      el.className = "card" + (spot.id === selectedId ? " selected" : "");
+      el.dataset.id = spot.id;
+      el.innerHTML = `
+        <div class="card-top">
+          <div class="card-icon ${spot.cat}">${spot.icon}</div>
+          <div class="card-meta">
+            <div class="card-name">${spot.name}</div>
+            <span class="cat-badge ${spot.cat}">${catLabel[spot.cat]}</span>
+          </div>
+        </div>
+        <div class="card-desc">${spot.desc}</div>
+        <div class="card-addr">📍 ${spot.addr}</div>
+        <div class="card-tags">${spot.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+      `;
+      el.addEventListener("click", () => selectSpot(spot));
+      wrap.appendChild(el);
+    });
+  }
+
+  // ── SELECT SPOT ──────────────────────────────────────
+  function selectSpot(spot) {
+    selectedId = spot.id;
+
+    // Update cards
+    document.querySelectorAll(".card").forEach(c => {
+      c.classList.toggle("selected", parseInt(c.dataset.id) === spot.id);
+    });
+
+    // Scroll card into view on mobile
+    const card = document.querySelector(`.card[data-id="${spot.id}"]`);
+    if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    // Update map
+    const url = `https://maps.google.com/maps?q=${spot.lat},${spot.lng}&z=16&output=embed`;
+    document.getElementById("mapFrame").src = url;
+
+    // Hide hint after first interaction
+    const hint = document.getElementById("mapHint");
+    hint.classList.add("hidden");
+    clearTimeout(hintTimer);
+  }
+
+  // ── FILTER ───────────────────────────────────────────
+  document.querySelectorAll(".fbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeFilter = btn.dataset.cat;
+      selectedId   = null;
+
+      document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      // Reset map to area view
+      document.getElementById("mapFrame").src =
+        "https://maps.google.com/maps?q=那須高原,栃木県&z=12&output=embed";
+
+      renderCards();
+    });
+  });
+
+  // ── INIT ─────────────────────────────────────────────
+  renderCards();
+
+  // Auto-hide hint after 5 seconds
+  hintTimer = setTimeout(() => {
+    document.getElementById("mapHint").classList.add("hidden");
+  }, 5000);
+</script>
+</body>
+</html>
