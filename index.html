@@ -385,11 +385,16 @@
 
     .lf-pin.villa {
       width: 52px; height: 52px;
-      background: var(--villa-red);
-      border: 3px solid var(--villa-gold);
+      background: linear-gradient(135deg, #3EC6E0 0%, #45C4A0 100%);
+      border: 3px solid #FFFFFF;
       font-size: 26px;
-      box-shadow: 0 3px 16px rgba(196,18,48,.55);
-      animation: villa-pulse 2.8s ease-in-out infinite;
+      box-shadow: 0 3px 16px rgba(62,198,224,.55);
+      animation: villa-pulse-fresh 2.8s ease-in-out infinite;
+    }
+
+    @keyframes villa-pulse-fresh {
+      0%, 100% { box-shadow: 0 3px 14px rgba(62,198,224,.5); }
+      50%       { box-shadow: 0 3px 14px rgba(62,198,224,.5), 0 0 0 7px rgba(62,198,224,.2); }
     }
 
     /* ─── EMPTY STATE ─────────────────────────────────── */
@@ -644,7 +649,7 @@
   }
 
   // ── VILLA MARKER ─────────────────────────────────────
-  const villaIcon = makeIcon("villa", "★", 52);
+  const villaIcon = makeIcon("villa", "🏡", 52);
 
   const villaPopupHtml = `
     <div class="popup-villa">
