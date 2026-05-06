@@ -334,7 +334,21 @@
     .popup-cat.restaurant { background: var(--cat-rest-bg); color: var(--cat-rest-text); }
     .popup-cat.nature     { background: var(--cat-nat-bg);  color: var(--cat-nat-text); }
 
-    .popup-addr { font-size: 11px; color: var(--text-light); }
+    .popup-addr { font-size: 11px; color: var(--text-light); margin-bottom: 10px; }
+
+    .gmaps-btn {
+      display: block;
+      background: #4285f4;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 700;
+      padding: 11px 14px;
+      border-radius: 8px;
+      letter-spacing: .02em;
+    }
+    .gmaps-btn:hover { background: #3367d6; }
 
     /* Villa popup */
     .popup-villa { line-height: 1.5; }
@@ -667,7 +681,8 @@
     const popup = `
       <div class="popup-name">${spot.name}</div>
       <span class="popup-cat ${spot.cat}">${catLabel[spot.cat]}</span>
-      <div class="popup-addr">📍 ${spot.addr}</div>`;
+      <div class="popup-addr">📍 ${spot.addr}</div>
+      <a class="gmaps-btn" href="https://maps.google.com/?q=${encodeURIComponent(spot.name + ' ' + spot.addr)}" target="_blank" rel="noopener">🗺️ Googleマップで開く</a>`;
 
     const m = L.marker([spot.lat, spot.lng], { icon })
       .addTo(map)
