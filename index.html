@@ -667,6 +667,7 @@
       </div>
       <div class="popup-villa-sub">犬と泊まれる一棟貸し別荘 · 那須高原</div>
       <a href="${villa.url}" target="_blank" rel="noopener" class="popup-book-btn">🏠 宿泊予約はこちら</a>
+      <a class="gmaps-btn" href="https://maps.google.com/?q=${encodeURIComponent(villa.name + ' 那須高原')}" target="_blank" rel="noopener" style="margin-top:8px;">🗺️ Googleマップで開く</a>
     </div>`;
 
   const villaMarker = L.marker([villa.lat, villa.lng], { icon: villaIcon, zIndexOffset: 1000 })
